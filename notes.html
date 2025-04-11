@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Notes & Textbooks</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .upload-box {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    input[type="file"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    ul {
+      margin-top: 20px;
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Upload Notes & Textbooks</h2>
+  <div class="upload-box">
+    <input type="text" id="noteTitle" placeholder="Title of the Note / Textbook" />
+    <input type="file" id="noteFile" accept=".pdf,.docx,.txt,.epub,.pptx" />
+    <button onclick="uploadNote()">Upload</button>
+
+    <ul id="notesList"></ul>
+  </div>
+
+  <script>
+    function uploadNote() {
+      const title = document.getElementById('noteTitle').value.trim();
+      const fileInput = document.getElementById('noteFile');
+      const file = fileInput.files[0];
+
+      if (!title || !file) {
+        alert("Please enter a title and select a file.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+        const newNote = {
+          title: title,
+          name: file.name,
+          type: file.type,
+          data: e.target.result
+        };
+        notes.push(newNote);
+        localStorage.setItem('notes', JSON.stringify(notes));
+        document.getElementById('noteTitle').value = '';
+        fileInput.value = '';
+        loadNotes();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadNotes() {
+      const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+      const list = document.getElementById('notesList');
+      list.innerHTML = '';
+      notes.forEach(note => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${note.title}</strong> - 
+          <a href="${note.data}" download="${note.name}">Download</a>`;
+        list.appendChild(li);
+      });
+    }
+
+    window.onload = loadNotes;
+  </script>
+
+</body>
+</html>

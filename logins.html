@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Login - Classroom Manager</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #222;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      color: #444;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      color: #333;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2196f3;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1976d2;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Student Login</h2>
+    <form id="studentLoginForm">
+      <label for="studentName">Your Name</label>
+      <input type="text" id="studentName" placeholder="Enter your name" required />
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("studentLoginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const studentName = document.getElementById("studentName").value.trim();
+
+      if (studentName.length > 0) {
+        alert("Welcome, " + studentName + "!");
+        localStorage.setItem("role", "student");
+        localStorage.setItem("user", studentName);
+        window.location.href = "student.html";
+      } else {
+        alert("Please enter your name.");
+      }
+    });
+  </script>
+
+</body>
+</html>

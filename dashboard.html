@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Teacher Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 12px 24px;
+      margin: 10px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    ul#taskList {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    ul#taskList li {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h2>Teacher Dashboard</h2>
+  <button onclick="location.href='notes.html'">Notes</button>
+  <button onclick="location.href='assign.html'">Assign Task</button>
+
+  <ul id="taskList"></ul>
+  <script src="app.js"></script>
+</body>
+</html>

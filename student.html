@@ -1,0 +1,141 @@
+<!-- student.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .section {
+      background-color: white;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      max-width: 700px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .task, .quiz {
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 8px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Student Activities</h2>
+
+  <div class="section" id="assignmentsSection">
+    <h3>Assignments</h3>
+    <div id="assignmentsList"></div>
+  </div>
+
+  <div class="section" id="quizzesSection">
+    <h3>Quizzes</h3>
+    <div id="quizzesList"></div>
+  </div>
+
+  <script>
+    function loadAssignments() {
+      const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      const container = document.getElementById("assignmentsList");
+      container.innerHTML = "";
+
+      tasks.forEach((task, index) => {
+        const div = document.createElement("div");
+        div.className = "task";
+        div.innerHTML = `
+          <strong>${task.title}</strong><br>
+          <p>${task.description}</p>
+          <textarea placeholder="Your Answer..." id="taskAns${index}"></textarea>
+          <button onclick="submitAssignment('${task.title}', ${index})">Submit</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function submitAssignment(title, index) {
+      const answer = document.getElementById(`taskAns${index}`).value.trim();
+      if (!answer) return alert("Answer cannot be empty!");
+      const submissions = JSON.parse(localStorage.getItem("taskSubmissions") || "[]");
+      submissions.push({ title, answer, date: new Date().toLocaleString() });
+      localStorage.setItem("taskSubmissions", JSON.stringify(submissions));
+      alert("Assignment submitted!");
+    }
+
+    function loadQuizzes() {
+      const quizzes = JSON.parse(localStorage.getItem("quizzes") || "[]");
+      const container = document.getElementById("quizzesList");
+      container.innerHTML = "";
+
+      quizzes.forEach((quiz, index) => {
+        const div = document.createElement("div");
+        div.className = "quiz";
+        div.innerHTML = `
+          <strong>${quiz.title}</strong><br>
+          <p>${quiz.question}</p>
+          ${quiz.options.map((opt, i) => `
+            <div><input type="radio" name="quiz${index}" value="${i+1}" /> ${opt}</div>
+          `).join('')}
+          <button onclick="submitQuiz('${quiz.title}', ${quiz.correct}, ${index})">Submit</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function submitQuiz(title, correctAnswer, index) {
+      const selected = document.querySelector(`input[name="quiz${index}"]:checked`);
+      if (!selected) return alert("Please select an option!");
+      const result = {
+        title,
+        selected: parseInt(selected.value),
+        correct: correctAnswer,
+        score: parseInt(selected.value) === correctAnswer ? 1 : 0,
+        date: new Date().toLocaleString()
+      };
+      const results = JSON.parse(localStorage.getItem("quizSubmissions") || "[]");
+      results.push(result);
+      localStorage.setItem("quizSubmissions", JSON.stringify(results));
+      alert(`Quiz submitted! You ${result.score === 1 ? "answered correctly 🎉" : "answered incorrectly ❌"}`);
+    }
+
+    loadAssignments();
+    loadQuizzes();
+  </script>
+
+</body>
+</html>

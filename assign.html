@@ -1,0 +1,142 @@
+<!-- assign.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Teacher Portal - Assign Task & Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .form-section {
+      background-color: #fff;
+      padding: 25px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      max-width: 500px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .message {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+
+  <div class="form-section">
+    <h2>Assign Task to All Students</h2>
+    <input type="text" id="taskTitle" placeholder="Task Title" />
+    <textarea id="taskDesc" placeholder="Task Description"></textarea>
+    <button onclick="createTask()">Assign Task</button>
+    <div id="taskMessage" class="message"></div>
+  </div>
+
+  <div class="form-section">
+    <h2>Assign Quiz to All Students</h2>
+    <input type="text" id="quizTitle" placeholder="Quiz Title" />
+    <textarea id="quizQuestion" placeholder="Question"></textarea>
+    <input type="text" id="option1" placeholder="Option 1" />
+    <input type="text" id="option2" placeholder="Option 2" />
+    <input type="text" id="option3" placeholder="Option 3" />
+    <input type="text" id="option4" placeholder="Option 4" />
+    <input type="number" id="correctOption" placeholder="Correct Option (1-4)" min="1" max="4" />
+    <button onclick="createQuiz()">Assign Quiz</button>
+    <div id="quizMessage" class="message"></div>
+  </div>
+
+  <script>
+    function showMessage(id, message, success = true) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.className = success ? "message success" : "message error";
+      setTimeout(() => el.textContent = '', 3000);
+    }
+
+    function createTask() {
+      const title = document.getElementById("taskTitle").value.trim();
+      const description = document.getElementById("taskDesc").value.trim();
+
+      if (title && description) {
+        const task = { title, description };
+        let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+        tasks.push(task);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        showMessage("taskMessage", "✅ Task assigned to all students!");
+        document.getElementById("taskTitle").value = "";
+        document.getElementById("taskDesc").value = "";
+      } else {
+        showMessage("taskMessage", "⚠ Please fill in all task fields.", false);
+      }
+    }
+
+    function createQuiz() {
+      const title = document.getElementById("quizTitle").value.trim();
+      const question = document.getElementById("quizQuestion").value.trim();
+      const options = [
+        document.getElementById("option1").value.trim(),
+        document.getElementById("option2").value.trim(),
+        document.getElementById("option3").value.trim(),
+        document.getElementById("option4").value.trim()
+      ];
+      const correct = parseInt(document.getElementById("correctOption").value);
+
+      if (
+        title && question &&
+        options.every(opt => opt !== "") &&
+        correct >= 1 && correct <= 4
+      ) {
+        const quiz = { title, question, options, correct };
+        let quizzes = JSON.parse(localStorage.getItem("quizzes") || "[]");
+        quizzes.push(quiz);
+        localStorage.setItem("quizzes", JSON.stringify(quizzes));
+        showMessage("quizMessage", "✅ Quiz assigned to all students!");
+        document.getElementById("quizTitle").value = "";
+        document.getElementById("quizQuestion").value = "";
+        document.getElementById("option1").value = "";
+        document.getElementById("option2").value = "";
+        document.getElementById("option3").value = "";
+        document.getElementById("option4").value = "";
+        document.getElementById("correctOption").value = "";
+      } else {
+        showMessage("quizMessage", "⚠ Please fill in all quiz fields correctly.", false);
+      }
+    }
+  </script>
+</body>
+</html>
