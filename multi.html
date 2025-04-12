@@ -1,0 +1,106 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>File Translation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    input, select, button, textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    textarea {
+      height: 200px;
+      resize: vertical;
+    }
+
+    .loading {
+      font-style: italic;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🌍 Upload File & Translate</h2>
+    
+    <label for="fileInput">Choose a file (.txt, .pdf, .docx):</label>
+    <input type="file" id="fileInput" accept=".txt,.pdf,.docx" />
+    
+    <label for="lang">Choose Language:</label>
+    <select id="lang">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="ta">Tamil</option>
+      <option value="te">Telugu</option>
+      <option value="kn">Kannada</option>
+      <option value="gu">Gujarati</option>
+    </select>
+
+    <button onclick="uploadAndTranslate()">Translate</button>
+
+    <h3>📜 Translated Text:</h3>
+    <textarea id="outputText" readonly placeholder="Translated content will appear here..."></textarea>
+    <div id="loading" class="loading"></div>
+  </div>
+
+  <script>
+    async function uploadAndTranslate() {
+      const fileInput = document.getElementById("fileInput");
+      const lang = document.getElementById("lang").value;
+      const output = document.getElementById("outputText");
+      const loading = document.getElementById("loading");
+
+      output.value = "";
+      loading.textContent = "";
+
+      if (!fileInput.files.length) {
+        alert("⚠ Please select a file to upload.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("language", lang);
+
+      try {
+        loading.textContent = "⏳ Translating... please wait";
+
+        const res = await fetch("http://127.0.0.1:5000/translate", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        loading.textContent = "";
+
+        if (res.ok && data.translated_text) {
+          output.value = data.translated_text;
+        } else {
+          output.value = "❌ Error: " + (data.error || "Translation failed.");
+        }
+      } catch (error) {
+        loading.textContent = "";
+        output.value = "❌ Network error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html> 

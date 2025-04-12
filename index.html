@@ -45,6 +45,14 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
+  fetch("http://localhost:5000/")
+    .then(res => res.text())
+    .then(msg => {
+      console.log("Backend says:", msg);
+    })
+    .catch(err => {
+      alert("Backend not reachable!");
+    });
   </script>
 
 </body>

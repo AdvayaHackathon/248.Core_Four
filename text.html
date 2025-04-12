@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text to Speech + File Upload</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button, input[type="file"] {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin: 10px 5px 20px 0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .speak-btn { background-color: #007bff; color: white; }
+    .toggle-btn { background-color: #444; color: white; }
+    .light-mode { background-color: #f4f6f8; color: #333; }
+    .dark-mode {
+      background-color: #121212;
+      color: #f4f4f4;
+    }
+    .dark-mode textarea {
+      background-color: #1e1e1e;
+      color: #f4f4f4;
+      border: 1px solid #555;
+    }
+  </style>
+</head>
+<body class="light-mode">
+
+  <h2>📚 Upload Note and Convert to Speech</h2>
+
+  <input type="file" id="fileInput" accept=".txt,.pdf">
+  <br>
+  <textarea id="textToRead" placeholder="Text will appear here...">Welcome to the classroom manager app!</textarea>
+  <br>
+  <button class="speak-btn" onclick="speakText()">🔊 Speak</button>
+  <button class="toggle-btn" onclick="toggleTheme()">Toggle Light/Dark Mode</button>
+
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <script>
+    function speakText() {
+      const text = document.getElementById("textToRead").value;
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = 1;
+        window.speechSynthesis.speak(msg);
+      } else {
+        alert("Sorry, your browser doesn't support Text to Speech!");
+      }
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      body.classList.toggle("light-mode");
+      body.classList.toggle("dark-mode");
+    }
+
+    document.getElementById("fileInput").addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      if (file.type === "text/plain") {
+        const reader = new FileReader();
+        reader.onload = function () {
+          document.getElementById("textToRead").value = reader.result;
+        };
+        reader.readAsText(file);
+      } else if (file.type === "application/pdf") {
+        const reader = new FileReader();
+        reader.onload = function () {
+          const typedarray = new Uint8Array(reader.result);
+          pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
+            let allText = '';
+            let countPromises = [];
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+              countPromises.push(
+                pdf.getPage(i).then(page => {
+                  return page.getTextContent().then(content => {
+                    const text = content.items.map(item => item.str).join(' ');
+                    allText += text + '\n';
+                  });
+                })
+              );
+            }
+
+            Promise.all(countPromises).then(() => {
+              document.getElementById("textToRead").value = allText;
+            });
+          });
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        alert("Please upload a .txt or .pdf file.");
+      }
+    });
+  </script>
+
+</body>
+</html>
